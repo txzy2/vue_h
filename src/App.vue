@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {onMounted, provide, ref} from 'vue';
 import type {UserProfile} from '@/lib/types/user.types.ts';
-import UserService from '@/lib/services/user.service.ts';
+import UserService from '@/lib/services/user.service';
 
 const userService = new UserService();
 const userProfile = ref<UserProfile | null>(null);
@@ -33,19 +33,10 @@ onMounted(() => {
 
 <template>
     <Header />
-    <main>
+    <div class="main-wrapper">
         <RouterView />
-    </main>
+    </div>
     <Footer />
 </template>
 
-<style scoped>
-main {
-    min-height: calc(100vh - 7vh - 60px); /* header + footer */
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-</style>
+<style scoped></style>

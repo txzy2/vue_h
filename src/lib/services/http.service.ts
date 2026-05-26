@@ -63,6 +63,7 @@ class HttpService {
      * @returns {void}
      */
     private initializeToken(): void {
+        //TODO: Переделать под получение с куки
         this.token = localStorage.getItem('token');
 
         if (this.token) {
