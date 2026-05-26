@@ -42,7 +42,7 @@ class HttpService {
                         const res = await this.client.post<{
                             access_token: string;
                             refresh_token: string;
-                        }>('/auth/refresh');
+                        }>(import.meta.env.VITE_API_URL + '/auth/refresh');
                         CookieService.set('access_token', res.data.access_token);
                         return this.client(original);
                     } catch {
