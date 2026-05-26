@@ -18,27 +18,9 @@ const router = createRouter({
         {
             path: '/login',
             name: 'login',
-            component: import('@/views/Login.vue'),
-            meta: {requiresGuest: true}
+            component: import('@/views/Login.vue')
         }
     ]
-});
-
-router.beforeEach(async (to, from, next) => {
-    const userStore = useUserStore();
-
-    if (!userStore.isInitialized) {
-        await userStore.fetchProfile();
-    }
-
-    // Проверка на авторизацию
-    if (to.meta.requiresAuth && !userStore.isAuthenticated) {
-        next('/login');
-    } else if (to.meta.requiresGuest && userStore.isAuthenticated) {
-        next('/');
-    } else {
-        next();
-    }
 });
 
 export default router;
