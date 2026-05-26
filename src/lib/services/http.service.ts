@@ -7,6 +7,11 @@ export interface ApiError {
     error: string;
 }
 
+export type ApiResponse<T> = {
+    success: boolean;
+    data: T;
+};
+
 class HttpService {
     private readonly client: AxiosInstance;
 
@@ -17,7 +22,7 @@ class HttpService {
             const isPublic = API_CONFIG.publicRoutes.some(route => config.url?.startsWith(route));
 
             if (!isPublic) {
-                const token = CookieService.get('token');
+                const token = CookieService.get('access_token');
                 if (token) {
                     config.headers['Authorization'] = `Bearer ${token}`;
                 }
@@ -34,12 +39,15 @@ class HttpService {
                 if (error.response?.status === 401 && !original._retry) {
                     original._retry = true;
                     try {
-                        const res = await this.client.post<{token: string}>('/auth/refresh');
-                        CookieService.set('token', res.data.token);
+                        const res = await this.client.post<{
+                            access_token: string;
+                            refresh_token: string;
+                        }>('/auth/refresh');
+                        CookieService.set('access_token', res.data.access_token);
                         return this.client(original);
                     } catch {
-                        CookieService.remove('token');
-                        window.location.href = '/login';
+                        CookieService.remove('access_token');
+                        // window.location.href = '/login';
                     }
                 }
 
