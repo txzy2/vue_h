@@ -1,19 +1,20 @@
 <script lang="ts" setup>
-import {computed, inject, ref, type Ref} from 'vue';
+import {inject, ref, type Ref} from 'vue';
 import {useI18n} from 'vue-i18n';
-import {useRoute} from 'vue-router';
 import BaseHelper from '@/lib/common/base.helper.ts';
 import type {UserProfile} from '@/lib/types/user.types.ts';
 
 const {t} = useI18n();
-const route = useRoute();
 
 const userProfile = inject<Ref<UserProfile | null>>('userProfile', ref(null));
 const isLoading = inject<Ref<boolean>>('isLoading', ref(false));
 const logout = inject<() => void>('logout', () => {});
 
-const navListItems = ['home', 'about', 'contact'];
-const isHomeRoute = computed(() => route.name === 'home');
+const navListItems = [
+    {name: 'home', link: '/'},
+    {name: 'about', link: '/about'},
+    {name: 'contact', link: '/contact'}
+];
 </script>
 
 <template>
@@ -24,10 +25,14 @@ const isHomeRoute = computed(() => route.name === 'home');
         </div>
 
         <div class="header_right">
-            <nav v-if="isHomeRoute" class="header_right__nav">
+            <nav v-if="$route.name !== 'dashboard'" class="header_right__nav">
                 <ul class="header_right__nav--list">
-                    <li v-for="item in navListItems" :key="item">
-                        {{ t(`navigation.${item}`) }}
+                    <li
+                        v-for="item in navListItems"
+                        :key="item.name"
+                        @click="BaseHelper.redirectTo(item.link)"
+                    >
+                        {{ t(`navigation.${item.name}`) }}
                     </li>
                 </ul>
             </nav>
@@ -47,17 +52,9 @@ const isHomeRoute = computed(() => route.name === 'home');
                     v-if="userProfile.photo"
                     :src="userProfile.photo"
                     alt="UserPhoto"
-                    height="20"
-                    width="20"
+                    class="header_right__profile--photo"
                 />
-                <img
-                    v-else
-                    alt="UserPhoto"
-                    height="24"
-                    src="@/assets/userProfilePhoto.svg"
-                    style="filter: invert(1)"
-                    width="24"
-                />
+                <User v-else class="header_right__profile--photo" />
                 <span class="header_right__profile--name">{{ userProfile.name }}</span>
             </div>
 
@@ -130,7 +127,10 @@ const isHomeRoute = computed(() => route.name === 'home');
 
             cursor: pointer;
 
-            img {
+            .header_right__profile--photo {
+                width: 25px;
+                height: 25px;
+
                 border: 1px solid var(--color-border);
                 border-radius: 50%;
             }
