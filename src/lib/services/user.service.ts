@@ -10,7 +10,7 @@ class UserService {
     }
 
     public async fetchUserProfile(): Promise<UserProfile | null> {
-        const result = await this.httpService.get<UserProfile>('/api/user');
+        const result = await this.httpService.get<UserProfile>('/user');
 
         if (BaseHelper.isApiError(result)) {
             console.warn('Failed to load profile:', result.error);

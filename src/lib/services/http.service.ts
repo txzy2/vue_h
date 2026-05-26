@@ -1,4 +1,5 @@
 import axios, {AxiosError, type AxiosResponse} from 'axios';
+import CookieService from '@/lib/services/cookie.service.ts';
 
 export interface ApiError {
     status: boolean;
@@ -6,10 +7,14 @@ export interface ApiError {
 }
 
 class HttpService {
-    private token: string | null = null;
-
     public constructor() {
-        this.initializeToken();
+        axios.interceptors.request.use(config => {
+            const token = CookieService.get('token');
+            if (token) {
+                config.headers['Authorization'] = `Bearer ${token}`;
+            }
+            return config;
+        });
     }
 
     /**
@@ -54,20 +59,6 @@ class HttpService {
             return response.data;
         } catch (error: unknown) {
             return this.handleError(error);
-        }
-    }
-
-    /**
-     * Инициализирует токен авторизации из localStorage
-     * @private
-     * @returns {void}
-     */
-    private initializeToken(): void {
-        //TODO: Переделать под получение с куки
-        this.token = localStorage.getItem('token');
-
-        if (this.token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
         }
     }
 
