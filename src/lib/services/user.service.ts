@@ -1,6 +1,7 @@
 import type {UserProfile} from '@/lib/types/user.types.ts';
 import BaseHelper from '@/lib/common/base.helper.ts';
 import HttpService from '@/lib/services/http.service.ts';
+import CookieService from '@/lib/services/cookie.service.ts';
 
 class UserService {
     private httpService: HttpService;
@@ -35,7 +36,7 @@ class UserService {
 
     public async logout(): Promise<void> {
         await this.httpService.post('/api/logout');
-        localStorage.removeItem('token');
+        CookieService.remove('token');
     }
 }
 

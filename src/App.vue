@@ -1,33 +1,13 @@
 <script lang="ts" setup>
-import {onMounted, provide, ref} from 'vue';
-import type {UserProfile} from '@/lib/types/user.types.ts';
-import UserService from '@/lib/services/user.service';
+import {onMounted} from 'vue';
+import {useUserStore} from '@/stores/user.store.ts';
 
-const userService = new UserService();
-const userProfile = ref<UserProfile | null>(null);
-const isLoading = ref(true);
+const userStore = useUserStore();
 
-// Функция загрузки профиля с использованием сервиса
-const fetchUserProfile = async () => {
-    isLoading.value = true;
-    userProfile.value = await userService.fetchUserProfile();
-    isLoading.value = false;
-};
-
-// Функция выхода
-const logout = async () => {
-    await userService.logout();
-    userProfile.value = null;
-};
-
-// Предоставляем данные и методы для дочерних компонентов
-provide('userProfile', userProfile);
-provide('isLoading', isLoading);
-provide('logout', logout);
-provide('fetchUserProfile', fetchUserProfile);
-
-onMounted(() => {
-    fetchUserProfile();
+onMounted(async () => {
+    if (!userStore.isAuthenticated) {
+        await userStore.fetchProfile();
+    }
 });
 </script>
 

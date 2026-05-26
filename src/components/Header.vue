@@ -1,14 +1,13 @@
 <script lang="ts" setup>
-import {inject, ref, type Ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import BaseHelper from '@/lib/common/base.helper.ts';
-import type {UserProfile} from '@/lib/types/user.types.ts';
+import {useUserStore} from '@/stores/user.store.ts';
+import {storeToRefs} from 'pinia';
 
 const {t} = useI18n();
 
-const userProfile = inject<Ref<UserProfile | null>>('userProfile', ref(null));
-const isLoading = inject<Ref<boolean>>('isLoading', ref(false));
-const logout = inject<() => void>('logout', () => {});
+const userStore = useUserStore();
+const {profile: userProfile} = storeToRefs(userStore);
 
 const navListItems = [
     {name: 'home', link: '/'},
@@ -38,7 +37,7 @@ const navListItems = [
             </nav>
 
             <!-- Состояние загрузки -->
-            <div v-if="isLoading" class="header_right__loading">
+            <div v-if="userStore.isLoading" class="header_right__loading">
                 <span>...</span>
             </div>
 
