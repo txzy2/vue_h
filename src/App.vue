@@ -52,10 +52,8 @@ onMounted(async () => {
     <Transition appear name="fade">
         <div v-if="showContent">
             <Header />
-            <div class="main-wrapper">
-                <RouterView />
-                <Toaster close-button position="bottom-right" />
-            </div>
+            <RouterView />
+            <Toaster close-button position="bottom-right" />
             <Footer />
         </div>
     </Transition>

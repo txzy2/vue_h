@@ -94,14 +94,6 @@ body {
     transition: background-color 0.6s, color 0.6s;
 }
 
-.main-wrapper {
-    min-height: calc(100vh - 12vh);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
 @theme inline {
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
@@ -149,10 +141,11 @@ body {
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+    * {
+        @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
+
+    body {
+        @apply bg-background text-foreground;
     }
 }

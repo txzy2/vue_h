@@ -3,18 +3,7 @@ import {Button} from '@/components/ui/button';
 </script>
 
 <template>
-    <div class="home">
-        <img alt="Vue logo" class="logo" height="64" src="@/assets/logo.svg" width="64" />
-        <Button variant="default">Кнопка</Button>
-    </div>
+    <div class="h-[85vh] flex flex-col items-center justify-center">Главная</div>
 </template>
 
-<style scoped>
-.home {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-</style>
+<style scoped></style>
