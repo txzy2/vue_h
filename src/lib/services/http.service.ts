@@ -1,5 +1,6 @@
 import axios, {AxiosError, type AxiosInstance, type AxiosResponse} from 'axios';
 import CookieService from '@/lib/services/cookie.service.ts';
+import {API_CONFIG} from '@/lib/config/api.config.ts';
 
 export interface ApiError {
     status: boolean;
@@ -10,13 +11,18 @@ class HttpService {
     private readonly client: AxiosInstance;
 
     public constructor() {
-        this.client = axios.create({baseURL: import.meta.env.VITE_API_URL});
+        this.client = axios.create({baseURL: API_CONFIG.baseURL});
 
         this.client.interceptors.request.use(config => {
-            const token = CookieService.get('token');
-            if (token) {
-                config.headers['Authorization'] = `Bearer ${token}`;
+            const isPublic = API_CONFIG.publicRoutes.some(route => config.url?.startsWith(route));
+
+            if (!isPublic) {
+                const token = CookieService.get('token');
+                if (token) {
+                    config.headers['Authorization'] = `Bearer ${token}`;
+                }
             }
+
             return config;
         });
 
@@ -75,12 +81,9 @@ class HttpService {
      * @returns {Promise<R | ApiError>} Промис с данными типа R или объектом ошибки
      *
      */
-    public async post<T extends object, R extends object>(
-        url: string,
-        data?: T
-    ): Promise<R | ApiError> {
+    public async post<T extends object>(url: string, data?: object): Promise<T | ApiError> {
         try {
-            const response: AxiosResponse<R> = await this.client.post(
+            const response: AxiosResponse<T> = await this.client.post(
                 import.meta.env.VITE_API_URL + url,
                 data
             );

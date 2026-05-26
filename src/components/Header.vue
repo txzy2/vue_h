@@ -3,8 +3,15 @@ import {useI18n} from 'vue-i18n';
 import BaseHelper from '@/lib/common/base.helper.ts';
 import {useUserStore} from '@/stores/user.store.ts';
 import {storeToRefs} from 'pinia';
+import {computed} from 'vue';
+import {useDark} from '@vueuse/core';
+import {Spinner} from '@/components/ui/spinner';
+import {LogIn, User} from 'lucide-vue-next';
+import ThemeSwitcher from '@/components/ui/theme/ThemeSwitcher.vue';
 
 const {t} = useI18n();
+const isDark = useDark();
+const textColor = computed(() => (isDark.value ? '#ffffff' : '#000000'));
 
 const userStore = useUserStore();
 const {profile: userProfile} = storeToRefs(userStore);
@@ -17,18 +24,25 @@ const navListItems = [
 </script>
 
 <template>
-    <div class="header">
-        <div class="header_logo" @click="BaseHelper.redirectTo('/')">
+    <header class="!m-auto flex h-[7vh] w-[90%] items-center justify-between border-b px-5">
+        <!-- Logo -->
+        <div
+            class="flex cursor-pointer items-center gap-2.5 transition duration-300 ease-in-out hover:scale-105"
+            @click="BaseHelper.redirectTo('/')"
+        >
             <img alt="Logo" class="logo" height="32" src="@/assets/logo.svg" width="32" />
             <span>Logo</span>
         </div>
 
-        <div class="header_right">
-            <nav v-if="$route.name !== 'dashboard'" class="header_right__nav">
-                <ul class="header_right__nav--list">
+        <!-- Right -->
+        <div class="flex items-center justify-center gap-5">
+            <!-- Nav -->
+            <nav v-if="$route.name !== 'dashboard'">
+                <ul class="flex items-center gap-2.5">
                     <li
                         v-for="item in navListItems"
                         :key="item.name"
+                        class="list-none transition duration-300 ease-in-out hover:scale-105 hover:cursor-pointer"
                         @click="BaseHelper.redirectTo(item.link)"
                     >
                         {{ t(`navigation.${item.name}`) }}
@@ -36,135 +50,50 @@ const navListItems = [
                 </ul>
             </nav>
 
-            <!-- Состояние загрузки -->
-            <div v-if="userStore.isLoading" class="header_right__loading">
-                <span>...</span>
+            <ThemeSwitcher />
+
+            <!-- Loading -->
+            <div v-if="userStore.isLoading">
+                <Spinner />
             </div>
 
-            <!-- Профиль пользователя -->
+            <!-- Profile -->
+            <!-- TODO: Сделать выпадающее меню если авторизирован -->
             <div
                 v-else-if="userProfile"
-                class="header_right__profile"
+                class="flex cursor-pointer items-center gap-2.5"
                 @click="BaseHelper.redirectTo('/about')"
             >
                 <img
                     v-if="userProfile.photo"
                     :src="userProfile.photo"
                     alt="UserPhoto"
-                    class="header_right__profile--photo"
+                    class="h-[25px] w-[25px] rounded-full border border-border"
                 />
-                <User v-else class="header_right__profile--photo" />
-                <span class="header_right__profile--name">{{ userProfile.name }}</span>
+
+                <User
+                    v-else
+                    :style="{color: textColor}"
+                    class="h-[25px] w-[25px] rounded-full border border-border"
+                />
+
+                <span
+                    class="text-[14px] font-semibold transition duration-300 ease-in-out hover:scale-105 hover:text-muted-foreground"
+                >
+                    {{ userProfile.name }}
+                </span>
             </div>
 
-            <!-- Кнопка входа -->
-            <div v-else class="header_right__login" @click="BaseHelper.redirectTo('/login')">
-                <LogIn class="header_right__login--icon" />
+            <!-- Login -->
+            <div
+                v-else
+                class="flex cursor-pointer items-center gap-[5px] transition duration-300 ease-in-out hover:scale-105"
+                @click="BaseHelper.redirectTo('/login')"
+            >
+                <LogIn class="h-[18px] w-[18px]" />
+
                 {{ t('navigation.login') }}
             </div>
         </div>
-    </div>
+    </header>
 </template>
-
-<style scoped>
-.header {
-    width: 90%;
-    height: 7vh;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    margin: auto;
-    padding: 0 20px;
-
-    border-bottom: 1px solid var(--color-border);
-
-    .header_logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-
-        cursor: pointer;
-
-        transition: 0.3s ease-in-out;
-
-        &:hover {
-            scale: 1.05;
-        }
-    }
-
-    .header_right {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        gap: 40px;
-
-        .header_right__nav {
-            .header_right__nav--list {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-
-                li {
-                    list-style: none;
-                    transition: 0.3s ease-in-out;
-
-                    &:hover {
-                        cursor: pointer;
-                        scale: 1.05;
-                    }
-                }
-            }
-        }
-
-        .header_right__profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-
-            cursor: pointer;
-
-            .header_right__profile--photo {
-                width: 25px;
-                height: 25px;
-
-                border: 1px solid var(--color-border);
-                border-radius: 50%;
-            }
-
-            span {
-                font-weight: 600;
-                font-size: 14px;
-
-                transition: 0.3s ease-in-out;
-            }
-
-            &:hover span {
-                scale: 1.05;
-                color: var(--vt-c-white-mute);
-            }
-        }
-
-        .header_right__login {
-            cursor: pointer;
-
-            display: flex;
-            align-items: center;
-            gap: 5px;
-
-            transition: 0.3s ease-in-out;
-
-            &:hover {
-                scale: 1.05;
-            }
-
-            .header_right__login--icon {
-                width: 18px;
-                height: 18px;
-            }
-        }
-    }
-}
-</style>

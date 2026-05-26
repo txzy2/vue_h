@@ -7,29 +7,14 @@ const {t} = useI18n();
 </script>
 
 <template>
-    <footer>
-        <div class="footer-created">{{ t(`footer.create`) }} <span>txzy</span></div>
-        <span>(v{{ appVersion }} -> {{ new Date().getFullYear() }})</span>
+    <footer class="flex h-[5vh] items-center justify-center gap-[5px] text-[12px]">
+        <div>
+            {{ t(`footer.create`) }}
+            <a class="font-bold text-[burlywood]" href="https://vk.com/antoster2" target="_blank"
+                >@HooBooTeam</a
+            >
+        </div>
+
+        <span class="font-extrabold">(v{{ appVersion }} -> {{ new Date().getFullYear() }})</span>
     </footer>
 </template>
-
-<style scoped>
-footer {
-    height: 5vh;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    gap: 5px;
-
-    font-size: 12px;
-
-    .footer-created {
-        span {
-            color: burlywood;
-            font-weight: 700;
-        }
-    }
-}
-</style>

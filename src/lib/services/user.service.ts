@@ -4,14 +4,10 @@ import HttpService from '@/lib/services/http.service.ts';
 import CookieService from '@/lib/services/cookie.service.ts';
 
 class UserService {
-    private httpService: HttpService;
-
-    public constructor() {
-        this.httpService = new HttpService();
-    }
+    public constructor() {}
 
     public async fetchUserProfile(): Promise<UserProfile | null> {
-        const result = await this.httpService.get<UserProfile>('/user');
+        const result = await HttpService.get<UserProfile>('/user');
 
         if (BaseHelper.isApiError(result)) {
             console.warn('Failed to load profile:', result.error);
@@ -35,7 +31,7 @@ class UserService {
     // }
 
     public async logout(): Promise<void> {
-        await this.httpService.post('/api/logout');
+        await HttpService.post('/api/logout');
         CookieService.remove('token');
     }
 }
