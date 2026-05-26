@@ -4,5 +4,19 @@
         "about": "About",
         "contact": "Contact",
         "login": "Login"
+    },
+    "pages": {
+        "home": {
+            "title": "Home Page"
+        },
+        "about": {
+            "title": "About Us"
+        },
+        "login": {
+            "title": "Sign In"
+        }
+    },
+    "app": {
+        "defaultTitle": "HooBoo"
     }
 }

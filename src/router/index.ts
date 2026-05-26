@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import {useUserStore} from '@/stores/user.store.ts';
+import CookieService from '@/lib/services/cookie.service';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,7 +8,8 @@ const router = createRouter({
         {
             path: '/',
             name: 'home',
-            component: HomeView
+            component: HomeView,
+            meta: {titleKey: 'navigation.home'}
         },
         {
             path: '/about',
@@ -18,9 +19,20 @@ const router = createRouter({
         {
             path: '/login',
             name: 'login',
-            component: import('@/views/Login.vue')
+            component: () => import('@/views/Login.vue')
         }
     ]
+});
+
+router.beforeEach((to, from) => {
+    const accessToken = CookieService.get('access_token');
+
+    if (to.path === '/login' && accessToken) {
+        window.location.href = '/';
+        return false;
+    }
+
+    return true;
 });
 
 export default router;

@@ -15,6 +15,17 @@ const i18n = createI18n({
     messages: locales
 });
 
+router.beforeEach((to, from, next) => {
+    if (to.meta?.titleKey) {
+        // @ts-ignore
+        const translatedTitle = i18n.global.t(to.meta.titleKey);
+        document.title = translatedTitle;
+    } else {
+        document.title = i18n.global.t('app.defaultTitle') || 'My App';
+    }
+    next();
+});
+
 const pinia = createPinia();
 const app = createApp(App);
 

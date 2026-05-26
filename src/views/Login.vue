@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {ref} from 'vue';
+import {onBeforeMount, ref} from 'vue';
 import {useRouter} from 'vue-router';
 import {useUserStore} from '@/stores/user.store.ts';
 import {storeToRefs} from 'pinia';
@@ -22,9 +22,8 @@ import UserService from '@/lib/services/user.service.ts';
 
 const router = useRouter();
 const userStore = useUserStore();
-const {isLoading} = storeToRefs(userStore);
+const {isLoading, profile} = storeToRefs(userStore);
 
-// Локальное состояние загрузки для формы
 const localLoading = ref(false);
 
 const formData = ref({
@@ -36,7 +35,6 @@ const formData = ref({
 const showPassword = ref(false);
 const errors = ref<{login?: string; password?: string}>({});
 
-// Validation
 const validateForm = () => {
     errors.value = {};
     let isValid = true;
@@ -66,7 +64,6 @@ const handleSubmit = async () => {
         return;
     }
 
-    // Включаем локальную загрузку
     localLoading.value = true;
 
     try {
@@ -94,17 +91,27 @@ const handleSubmit = async () => {
             duration: 5000
         });
     } finally {
-        // Выключаем локальную загрузку
         localLoading.value = false;
     }
 };
 
-// Handle enter key
 const onEnter = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
         handleSubmit();
     }
 };
+
+if (profile.value) {
+    // Показываем заглушку или делаем редирект
+    router.replace('/');
+}
+
+onBeforeMount(() => {
+    if (profile.value) {
+        // Мгновенный редирект
+        router.replace('/');
+    }
+});
 </script>
 
 <template>
