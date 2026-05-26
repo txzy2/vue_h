@@ -4,6 +4,9 @@ import {useUserStore} from '@/stores/user.store.ts';
 import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
 
+import {Toaster} from '@/components/ui/sonner';
+import 'vue-sonner/style.css';
+
 const userStore = useUserStore();
 
 onMounted(async () => {
@@ -17,6 +20,7 @@ onMounted(async () => {
     <Header />
     <div class="main-wrapper">
         <RouterView />
+        <Toaster close-button position="bottom-right" />
     </div>
     <Footer />
 </template>
