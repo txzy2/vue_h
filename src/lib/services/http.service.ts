@@ -46,8 +46,9 @@ class HttpService {
                         CookieService.set('access_token', res.data.access_token);
                         return this.client(original);
                     } catch {
-                        CookieService.remove('access_token');
+                        // CookieService.remove('access_token');
                         // window.location.href = '/login';
+                        console.log("blabla")
                     }
                 }
 
