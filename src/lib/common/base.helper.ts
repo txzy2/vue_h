@@ -12,7 +12,7 @@ class BaseHelper {
      * @returns true если результат - ошибка API
      */
     static isApiError<T extends object>(result: T | ApiError): result is ApiError {
-        return (result as ApiError).status === false && 'error' in result;
+        return !(result as ApiError).status && 'error' in result;
     }
 }
 
