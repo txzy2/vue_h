@@ -13,16 +13,24 @@ export type ApiResponse<T> = {
 };
 
 class HttpService {
-    private readonly client: AxiosInstance;
+    private client: AxiosInstance;
 
-    public constructor() {
+    public constructor(
+        baseURL: string,
+        private readonly cookieService: CookieService
+    ) {
+        this.client = axios.create({baseURL});
+        this.setupInterceptors();
+    }
+
+    private setupInterceptors() {
         this.client = axios.create({baseURL: API_CONFIG.baseURL});
 
         this.client.interceptors.request.use(config => {
             const isPublic = API_CONFIG.publicRoutes.some(route => config.url?.startsWith(route));
 
             if (!isPublic) {
-                const token = CookieService.get('access_token');
+                const token = this.cookieService.get('access_token');
                 if (token) {
                     config.headers['Authorization'] = `Bearer ${token}`;
                 }
@@ -48,7 +56,7 @@ class HttpService {
                     } catch {
                         // CookieService.remove('access_token');
                         // window.location.href = '/login';
-                        console.log("blabla")
+                        console.log('blabla');
                     }
                 }
 
@@ -110,4 +118,4 @@ class HttpService {
     }
 }
 
-export default new HttpService();
+export default HttpService;

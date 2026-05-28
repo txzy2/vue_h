@@ -11,15 +11,18 @@ import CookieService from '@/lib/services/cookie.service.ts';
 import {useUserStore} from '@/stores/user.store.ts';
 
 class UserService {
-    public constructor() {}
+    public constructor(
+        private readonly httpService: HttpService,
+        private readonly cookieService: CookieService
+    ) {}
 
     public async fetchUserProfile(): Promise<UserProfile | null> {
-        if (!CookieService.get('access_token')) {
+        if (!this.cookieService.get('access_token')) {
             console.log('No access token found, skipping profile fetch');
             return null;
         }
 
-        const result = await HttpService.get<UserProfileResponse>('/user/me');
+        const result = await this.httpService.get<UserProfileResponse>('/user/me');
 
         if (BaseHelper.isApiError(result)) {
             console.warn('Failed to load profile:', result.error);
@@ -46,7 +49,7 @@ class UserService {
 
     public async login(data: UserLoginRequest): Promise<boolean> {
         try {
-            const result = await HttpService.post<UserLoginApiResponse>('/auth/login', data);
+            const result = await this.httpService.post<UserLoginApiResponse>('/auth/login', data);
 
             if (BaseHelper.isApiError(result)) {
                 console.warn('Login failed:', result.error);
@@ -98,7 +101,7 @@ class UserService {
     // }
 
     public async logout(): Promise<void> {
-        await HttpService.post('/api/logout');
+        await this.httpService.post('/api/logout');
         CookieService.remove('token');
     }
 }

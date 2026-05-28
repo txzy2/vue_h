@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/card';
 import {Checkbox} from '@/components/ui/checkbox';
 import UserService from '@/lib/services/user.service.ts';
+import {container} from '@/lib/di/container.ts';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -67,7 +68,8 @@ const handleSubmit = async () => {
     localLoading.value = true;
 
     try {
-        const userService = new UserService();
+        const {userService} = container;
+
         await userService.login({
             login: formData.value.login,
             password: formData.value.password

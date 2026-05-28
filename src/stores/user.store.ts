@@ -3,13 +3,15 @@ import UserService from '@/lib/services/user.service';
 import {computed, ref} from 'vue';
 import type {UserProfile} from '@/lib/types/user.types.ts';
 import CookieService from '@/lib/services/cookie.service';
+import {container} from '@/lib/di/container.ts';
 
-const userService = new UserService();
 
 export const useUserStore = defineStore('user', () => {
     const profile = ref<UserProfile | null>(null);
     const isLoading = ref(false);
     const isInitialized = ref(false);
+
+    const {userService, cookieService} = container;
 
     async function fetchProfile() {
         if (isInitialized.value && profile.value !== null) {
@@ -17,7 +19,7 @@ export const useUserStore = defineStore('user', () => {
         }
 
         // Не загружаем без токена
-        if (!CookieService.get('access_token')) {
+        if (!cookieService.get('access_token')) {
             return null;
         }
 
@@ -40,7 +42,7 @@ export const useUserStore = defineStore('user', () => {
         return profile.value;
     }
 
-    function setProfile(data: UserProfile) {
+    async function setProfile(data: UserProfile) {
         profile.value = data;
         isInitialized.value = true;
     }

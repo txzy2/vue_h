@@ -62,7 +62,7 @@ const closeMobileMenu = () => {
                 class="transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12"
                 style="position: relative; top: -10px; right: -2px; line-height: 0"
             >
-                <Spotlight size="20" />
+                <Spotlight :size="20" />
             </span>
             <span
                 class="transition-all duration-300 group-hover:tracking-wider"
@@ -190,7 +190,7 @@ const closeMobileMenu = () => {
                 <SheetContent class="w-[300px] sm:w-[350px]" side="right">
                     <SheetHeader>
                         <SheetTitle class="flex items-center gap-2">
-                            <Spotlight size="20" />
+                            <Spotlight :size="20" />
                             <span>Menu</span>
                         </SheetTitle>
                     </SheetHeader>

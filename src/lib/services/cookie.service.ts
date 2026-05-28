@@ -28,15 +28,11 @@ export class CookieService {
         document.cookie = cookie;
     }
 
-    static get(name: string): string | null {
+    public get(name: string): string | null {
         const key = `${encodeURIComponent(name)}=`;
         const found = document.cookie.split('; ').find(part => part.startsWith(key));
 
         return found ? decodeURIComponent(found.slice(key.length)) : null;
-    }
-
-    static has(name: string): boolean {
-        return CookieService.get(name) !== null;
     }
 
     static remove(name: string, path = '/', domain?: string): void {
