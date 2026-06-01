@@ -5,7 +5,7 @@ import {Button} from '@/components/ui/button';
 <template>
     <div class="home">
         <img alt="Vue logo" class="logo" height="64" src="@/assets/logo.svg" width="64" />
-        <Button variant="default">Кнопка</Button>
+        <Button variant="default">Кнопка123</Button>
     </div>
 </template>
 

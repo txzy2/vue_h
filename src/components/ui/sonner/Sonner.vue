@@ -13,6 +13,17 @@ import { Toaster as Sonner } from 'vue-sonner'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<ToasterProps>()
+
+// Извлекаем toastOptions из пропсов, если они есть
+const { toastOptions: propsToastOptions, ...restProps } = props
+
+// Объединяем кастомные настройки с пропсами (приоритет — пропсы)
+const mergedToastOptions = {
+  classes: {
+    toast: 'rounded-2xl',
+  },
+  ...propsToastOptions
+}
 </script>
 
 <template>
@@ -29,32 +40,9 @@ const props = defineProps<ToasterProps>()
       '--gray5': 'var(--border)',
       '--gray12': 'var(--popover-foreground)',
     }"
-    :toast-options="{
-      classes: {
-        toast: 'rounded-2xl',
-      },
-    }"
-    v-bind="props"
+    :toast-options="mergedToastOptions"
+    v-bind="restProps"
   >
-    <template #success-icon>
-      <CircleCheckIcon class="size-4" />
-    </template>
-    <template #info-icon>
-      <InfoIcon class="size-4" />
-    </template>
-    <template #warning-icon>
-      <TriangleAlertIcon class="size-4" />
-    </template>
-    <template #error-icon>
-      <OctagonXIcon class="size-4" />
-    </template>
-    <template #loading-icon>
-      <div>
-        <Loader2Icon class="size-4 animate-spin" />
-      </div>
-    </template>
-    <template #close-icon>
-      <XIcon class="size-4" />
-    </template>
+    <!-- шаблоны иконок -->
   </Sonner>
 </template>

@@ -41,7 +41,7 @@ const closeMobileMenu = () => {
 <template>
     <header
         :class="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-gray-200'"
-        class="!m-auto relative flex h-[7vh] w-[90%] items-center justify-between rounded-lg px-4 md:px-6 transition-all duration-300"
+        class="!m-auto relative flex h-[60px] w-[90%] items-center justify-between rounded-lg px-4 md:px-6 transition-all duration-300"
     >
         <!-- Акцентная полоса сверху -->
         <div
@@ -62,7 +62,7 @@ const closeMobileMenu = () => {
                 class="transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12"
                 style="position: relative; top: -10px; right: -2px; line-height: 0"
             >
-                <Spotlight size="20" />
+                <Spotlight :size="20" />
             </span>
             <span
                 class="transition-all duration-300 group-hover:tracking-wider"
@@ -190,7 +190,7 @@ const closeMobileMenu = () => {
                 <SheetContent class="w-[300px] sm:w-[350px]" side="right">
                     <SheetHeader>
                         <SheetTitle class="flex items-center gap-2">
-                            <Spotlight size="20" />
+                            <Spotlight :size="20" />
                             <span>Menu</span>
                         </SheetTitle>
                     </SheetHeader>
