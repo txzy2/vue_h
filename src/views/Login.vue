@@ -42,7 +42,7 @@ const validateForm = () => {
     let isValid = true;
 
     if (!formData.value.login) {
-        errors.value.login = 'Логин или email обязателен';
+        errors.value.login = 'Логин обязателен';
         isValid = false;
     }
 
@@ -136,10 +136,9 @@ const onEnter = (e: KeyboardEvent) => {
 
             <CardContent class="flex flex-col gap-5">
                 <form class="flex flex-col gap-5" @submit.prevent="handleSubmit">
-                    <!-- Login/Email Field -->
                     <div class="">
                         <Label class="text-sm font-medium mb-2" for="login">
-                            Логин или Email
+                            Логин
                             <span class="text-destructive">*</span>
                         </Label>
                         <Input
@@ -148,7 +147,7 @@ const onEnter = (e: KeyboardEvent) => {
                             :class="{'border-destructive': errors.login}"
                             :disabled="localLoading || isLoading"
                             autocomplete="username"
-                            placeholder="Введите логин или email"
+                            placeholder="Введите логин"
                             type="text"
                             @keyup="onEnter"
                         />
