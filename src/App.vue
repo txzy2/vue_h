@@ -20,7 +20,7 @@ const {t, locale} = useI18n();
 // Обновление заголовка
 const updateTitle = () => {
     const titleKey = route.meta?.titleKey;
-    document.title = titleKey ? t(titleKey) : t('app.defaultTitle');
+    document.title = titleKey ? t(titleKey.toString()) : t('app.defaultTitle');
 };
 
 watch(() => route.path, updateTitle, {immediate: true});
