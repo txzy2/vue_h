@@ -28,7 +28,7 @@ export class CookieService {
         document.cookie = cookie;
     }
 
-    public get(name: string): string | null {
+    public static get(name: string): string | null {
         const key = `${encodeURIComponent(name)}=`;
         const found = document.cookie.split('; ').find(part => part.startsWith(key));
 

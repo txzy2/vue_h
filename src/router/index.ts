@@ -1,6 +1,6 @@
+import CookieService from '@/lib/services/cookie.service';
 import {createRouter, createWebHistory} from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import CookieService from '@/lib/services/cookie.service';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),

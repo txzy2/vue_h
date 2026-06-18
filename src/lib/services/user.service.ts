@@ -11,13 +11,10 @@ import CookieService from '@/lib/services/cookie.service.ts';
 import {useUserStore} from '@/stores/user.store.ts';
 
 class UserService {
-    public constructor(
-        private readonly httpService: HttpService,
-        private readonly cookieService: CookieService
-    ) {}
+    public constructor(private readonly httpService: HttpService) {}
 
     public async fetchUserProfile(): Promise<UserProfile | null> {
-        if (!this.cookieService.get('access_token')) {
+        if (!CookieService.get('access_token')) {
             console.log('No access token found, skipping profile fetch');
             return null;
         }

@@ -75,19 +75,30 @@ const handleSubmit = async () => {
             password: formData.value.password
         });
 
-        await userStore.fetchProfile();
+        const user = await userStore.fetchProfile();
+        if (user) {
+            toast.success('Добро пожаловать!', {
+                description: `Вы успешно вошли как ${userStore.profile?.name || formData.value.login}`,
+                duration: 4000,
+                action: {
+                    label: 'На главную',
+                    onClick: () => router.push('/')
+                }
+            });
 
-        toast.success('Добро пожаловать!', {
-            description: `Вы успешно вошли как ${userStore.profile?.name || formData.value.login}`,
-            duration: 4000,
-            action: {
-                label: 'На главную',
-                onClick: () => router.push('/')
-            }
-        });
-
-        await router.push('/');
+            await router.push('/');
+        } else {
+            toast.error('Произошла ошибка.', {
+                description: 'Приносим свои извинения, но сервер верменно не доступен',
+                duration: 2000,
+                action: {
+                    label: 'Обновить страницу',
+                    onClick: () => window.location.reload()
+                }
+            });
+        }
     } catch (error: any) {
+        console.log(error);
         toast.error('Ошибка входа', {
             description: error.response?.data?.message || 'Неверный логин или пароль',
             duration: 5000

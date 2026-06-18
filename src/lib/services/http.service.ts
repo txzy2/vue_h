@@ -15,10 +15,7 @@ export type ApiResponse<T> = {
 class HttpService {
     private client: AxiosInstance;
 
-    public constructor(
-        baseURL: string,
-        private readonly cookieService: CookieService
-    ) {
+    public constructor(baseURL: string) {
         this.client = axios.create({baseURL});
         this.setupInterceptors();
     }
@@ -30,7 +27,7 @@ class HttpService {
             const isPublic = API_CONFIG.publicRoutes.some(route => config.url?.startsWith(route));
 
             if (!isPublic) {
-                const token = this.cookieService.get('access_token');
+                const token = CookieService.get('access_token');
                 if (token) {
                     config.headers['Authorization'] = `Bearer ${token}`;
                 }
@@ -99,6 +96,7 @@ class HttpService {
      *
      */
     public async post<T extends object>(url: string, data?: object): Promise<T | ApiError> {
+        console.log(import.meta.env.VITE_API_URL);
         try {
             const response: AxiosResponse<T> = await this.client.post(
                 import.meta.env.VITE_API_URL + url,
