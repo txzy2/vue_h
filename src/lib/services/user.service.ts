@@ -44,13 +44,12 @@ class UserService {
         return null;
     }
 
-    public async login(data: UserLoginRequest): Promise<boolean> {
+    public async login(data: UserLoginRequest): Promise<boolean | string> {
         try {
             const result = await this.httpService.post<UserLoginApiResponse>('/auth/login', data);
 
             if (BaseHelper.isApiError(result)) {
-                console.warn('Login failed:', result.error);
-                return false;
+                return result.error;
             }
 
             if (result.success && result.data) {

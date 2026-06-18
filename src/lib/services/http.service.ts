@@ -110,7 +110,7 @@ class HttpService {
 
     private handleError(error: unknown): ApiError {
         if (error instanceof AxiosError) {
-            return {status: false, error: error.message};
+            return {status: false, error: error.response?.data.error};
         }
         return {status: false, error: 'Unknown error occurred'};
     }

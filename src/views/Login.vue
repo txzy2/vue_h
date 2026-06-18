@@ -20,6 +20,7 @@ import {
 import {Checkbox} from '@/components/ui/checkbox';
 import UserService from '@/lib/services/user.service.ts';
 import {container} from '@/lib/di/container.ts';
+import type {ApiError} from '@/lib/services/http.service';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -32,6 +33,8 @@ const formData = ref({
     password: '',
     rememberMe: false
 });
+
+const errorMessage = ref<string | null>(null);
 
 const showPassword = ref(false);
 const errors = ref<{login?: string; password?: string}>({});
@@ -70,10 +73,15 @@ const handleSubmit = async () => {
     try {
         const {userService} = container;
 
-        await userService.login({
+        const result = await userService.login({
             login: formData.value.login,
             password: formData.value.password
         });
+
+        if (typeof result === 'string') {
+            errorMessage.value = result;
+            return;
+        }
 
         const user = await userStore.fetchProfile();
         if (user) {
@@ -238,6 +246,8 @@ onBeforeMount(() => {
                             </Label>
                         </div>
                     </div>
+
+                    <span class="text-sm text-red-500">{{ errorMessage }}</span>
 
                     <!-- Submit Button -->
                     <Button
