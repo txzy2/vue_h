@@ -3,6 +3,35 @@ import {Badge} from '@/components/ui/badge';
 import {Button} from '@/components/ui/button';
 // import DashboardMockup from '@/components/DashboardMockup.vue';
 import {Card, CardContent, CardHeader} from '@/components/ui/card';
+import {ref} from 'vue';
+import {Circle, Users, Clock3} from 'lucide-vue-next';
+
+const tables = [
+    {
+        id: 1,
+        name: 'Стол №1',
+        seats: 4,
+        status: 'busy'
+    },
+    {
+        id: 2,
+        name: 'Стол №2',
+        seats: 6,
+        status: 'free'
+    },
+    {
+        id: 3,
+        name: 'VIP №1',
+        seats: 8,
+        status: 'reserved'
+    },
+    {
+        id: 4,
+        name: 'Стол №4',
+        seats: 4,
+        status: 'free'
+    }
+];
 </script>
 
 <template>
@@ -32,18 +61,46 @@ import {Card, CardContent, CardHeader} from '@/components/ui/card';
                     <CardHeader> Загрузка зала </CardHeader>
 
                     <CardContent>
-                        <div class="grid grid-cols-4 gap-4">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div
                                 v-for="table in tables"
                                 :key="table.id"
-                                :class="{
-                                    'bg-green-500': table.status === 'free',
-                                    'bg-red-500': table.status === 'busy',
-                                    'bg-yellow-500': table.status === 'reserved'
-                                }"
-                                class="h-20 rounded-xl flex items-center justify-center"
+                                class="rounded-2xl border bg-card p-4 transition-all hover:shadow-md hover:-translate-y-1"
                             >
-                                {{ table.name }}
+                                <div class="flex items-center justify-between">
+                                    <span class="font-medium">
+                                        {{ table.name }}
+                                    </span>
+
+                                    <Circle
+                                        :class="[
+                                            'size-3 fill-current',
+                                            table.status === 'busy'
+                                                ? 'text-red-500'
+                                                : table.status === 'reserved'
+                                                  ? 'text-yellow-500'
+                                                  : 'text-green-500'
+                                        ]"
+                                    />
+                                </div>
+
+                                <div class="mt-4 flex items-center gap-2 text-muted-foreground">
+                                    <Users class="size-4" />
+                                    <span>{{ table.seats }} мест</span>
+                                </div>
+
+                                <div class="mt-2 flex items-center gap-2 text-muted-foreground">
+                                    <Clock3 class="size-4" />
+                                    <span>
+                                        {{
+                                            table.status === 'busy'
+                                                ? 'Занят'
+                                                : table.status === 'reserved'
+                                                  ? 'Бронь'
+                                                  : 'Свободен'
+                                        }}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </CardContent>
