@@ -10,7 +10,7 @@ export const useUserStore = defineStore('user', () => {
     const isLoading = ref(false);
     const isInitialized = ref(false);
 
-    const {userService, cookieService} = container;
+    const {userService} = container;
 
     async function fetchProfile() {
         if (isInitialized.value && profile.value !== null) {

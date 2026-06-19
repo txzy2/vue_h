@@ -48,6 +48,7 @@ class HttpService {
                             access_token: string;
                             refresh_token: string;
                         }>(import.meta.env.VITE_API_URL + '/auth/refresh');
+
                         CookieService.set('access_token', res.data.access_token);
                         return this.client(original);
                     } catch {
@@ -74,12 +75,9 @@ class HttpService {
         params?: Record<string, unknown>
     ): Promise<T | ApiError> {
         try {
-            const response: AxiosResponse<T> = await this.client.get(
-                import.meta.env.VITE_API_URL + url,
-                {
-                    params
-                }
-            );
+            const response: AxiosResponse<T> = await this.client.get(API_CONFIG.baseURL + url, {
+                params
+            });
             return response.data;
         } catch (error: unknown) {
             return this.handleError(error);
@@ -96,10 +94,9 @@ class HttpService {
      *
      */
     public async post<T extends object>(url: string, data?: object): Promise<T | ApiError> {
-        console.log(import.meta.env.VITE_API_URL);
         try {
             const response: AxiosResponse<T> = await this.client.post(
-                import.meta.env.VITE_API_URL + url,
+                API_CONFIG.baseURL + url,
                 data
             );
             return response.data;
