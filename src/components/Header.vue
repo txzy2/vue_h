@@ -1,16 +1,26 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n';
-import {ref, computed} from 'vue';
+import {ref, computed, onUnmounted} from 'vue';
 import BaseHelper from '@/lib/common/base.helper.ts';
 import {useUserStore} from '@/stores/user.store.ts';
 import {storeToRefs} from 'pinia';
 import {useDark} from '@vueuse/core';
 import {Spinner} from '@/components/ui/spinner';
-import {LogIn, User, Spotlight, Menu, X} from 'lucide-vue-next';
+import {LogIn, User, Spotlight, Menu, X, Settings, LogOut} from 'lucide-vue-next';
 import ThemeSwitcher from '@/components/ui/theme/ThemeSwitcher.vue';
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from '@/components/ui/sheet';
 import {Button} from '@/components/ui/button';
 import {Separator} from '@/components/ui/separator';
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import {useClock} from '@/composables/useClock';
 
 const {t} = useI18n();
 const isDark = useDark();
@@ -18,6 +28,7 @@ const textColor = computed(() => (isDark.value ? '#ffffff' : '#000000'));
 const isMobileMenuOpen = ref(false);
 
 const userStore = useUserStore();
+const {isAuthenticated} = userStore;
 const {profile: userProfile} = storeToRefs(userStore);
 
 const isAdmin = computed(() => {
@@ -26,6 +37,8 @@ const isAdmin = computed(() => {
 const isSuperUser = computed(() => {
     return userProfile.value !== null && userProfile.value.role === 'SuperUser';
 });
+
+const {currentTime} = useClock();
 
 const navListItems = [
     {name: 'home', link: '/'},
@@ -36,12 +49,17 @@ const navListItems = [
 const closeMobileMenu = () => {
     isMobileMenuOpen.value = false;
 };
+
+const handleLogout = async () => {
+    await userStore.logout(); // или твой метод
+    BaseHelper.redirectTo('/');
+};
 </script>
 
 <template>
     <header
         :class="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-gray-200'"
-        class="!m-auto relative flex h-[7vh] w-[90%] items-center justify-between rounded-lg px-4 md:px-6 transition-all duration-300"
+        class="m-auto! relative flex h-[7vh] w-[90%] items-center justify-between rounded-lg px-4 md:px-6 transition-all duration-300"
     >
         <!-- Акцентная полоса сверху -->
         <div
@@ -82,24 +100,38 @@ const closeMobileMenu = () => {
             </span>
         </div>
 
+        <div class="absolute right-1/2 left-1/2 hidden md:block" v-if="isAuthenticated">
+            {{ currentTime }}
+        </div>
+
         <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center justify-center gap-5">
             <!-- Nav -->
-            <nav v-if="$route.name !== 'dashboard'" class="flex items-center gap-2">
-                <ul :class="`flex items-center gap-2.5 ${isSuperUser ? 'hidden' : ''}`">
-                    <li
+            <nav class="flex items-center gap-2">
+                <!-- Ссылка на дашборд если авторизован и не на дашборде -->
+                <button
+                    v-if="isAuthenticated && $route.name !== 'dashboard'"
+                    class="transition duration-300 hover:scale-105 text-[#C04000] cursor-crosshair"
+                    @click="BaseHelper.redirectTo('/dashboard')"
+                >
+                    Дашборд
+                </button>
+
+                <!-- Обычная навигация — скрыта для SuperUser -->
+                <template v-if="!isSuperUser && !isAdmin">
+                    <button
                         v-for="item in navListItems"
                         :key="item.name"
-                        class="list-none transition duration-300 ease-in-out hover:scale-105 hover:cursor-pointer"
+                        class="transition duration-300 hover:scale-105 cursor-crosshair"
                         @click="BaseHelper.redirectTo(item.link)"
                     >
                         {{ t(`navigation.${item.name}`) }}
-                    </li>
-                </ul>
+                    </button>
+                </template>
 
-                <ul v-if="isSuperUser">
-                    <li>123</li>
-                </ul>
+                <template v-else>
+                    <!-- твои SuperUser пункты -->
+                </template>
             </nav>
 
             <ThemeSwitcher />
@@ -110,37 +142,64 @@ const closeMobileMenu = () => {
             </div>
 
             <!-- Profile Desktop -->
-            <div
-                v-else-if="userProfile"
-                :title="userProfile.email"
-                class="flex cursor-pointer items-center gap-2.5"
-                @click="BaseHelper.redirectTo('/dashboard')"
-            >
-                <img
-                    v-if="userProfile.photo"
-                    :src="userProfile.photo"
-                    alt="UserPhoto"
-                    class="h-[25px] w-[25px] rounded-full border border-border"
-                />
 
-                <User
-                    v-else
-                    :style="{color: textColor}"
-                    class="h-[25px] w-[25px] rounded-full border border-border"
-                />
-
-                <div
-                    class="flex-col text-[14px] font-semibold transition duration-300 ease-in-out hover:text-muted-foreground hidden lg:flex"
-                >
-                    <div class="m-0">
-                        <span>{{ userProfile.name }}</span>
-                        <span class="text-[10px] mr-1 text-[#C04000]">
-                            ({{ isSuperUser || isAdmin ? userProfile.role : '' }})
-                        </span>
+            <DropdownMenu v-else-if="userProfile">
+                <DropdownMenuTrigger as-child>
+                    <div
+                        :title="userProfile.email"
+                        class="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1 transition-colors hover:bg-muted"
+                    >
+                        <img
+                            v-if="userProfile.photo"
+                            :src="userProfile.photo"
+                            alt="UserPhoto"
+                            class="h-[25px] w-[25px] rounded-full border border-border"
+                        />
+                        <User
+                            v-else
+                            :style="{color: textColor}"
+                            class="h-[25px] w-[25px] rounded-full border border-border"
+                        />
+                        <div class="flex-col text-[14px] font-semibold hidden lg:flex">
+                            <div class="m-0">
+                                <span>{{ userProfile.name }}</span>
+                                <span class="text-[10px] mr-1 text-[#C04000]">
+                                    ({{ isSuperUser || isAdmin ? userProfile.role : '' }})
+                                </span>
+                            </div>
+                            <span class="text-[10px]">{{ userProfile.email }}</span>
+                        </div>
                     </div>
-                    <span class="text-[10px]">{{ userProfile.email }}</span>
-                </div>
-            </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" class="w-48 flex flex-col gap-2">
+                    <DropdownMenuLabel class="text-xs text-muted-foreground font-normal">
+                        {{ userProfile.email }}
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                        class="cursor-pointer"
+                        @click="BaseHelper.redirectTo('/profile')"
+                    >
+                        <User class="mr-2 h-4 w-4" />
+                        Профиль
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        class="cursor-pointer"
+                        @click="BaseHelper.redirectTo('/settings')"
+                    >
+                        <Settings class="mr-2 h-4 w-4" />
+                        Настройки
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                        class="cursor-pointer text-red-500 focus:text-red-500"
+                        @click="handleLogout"
+                    >
+                        <LogOut class="mr-2 h-4 w-4" />
+                        Выйти
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
 
             <!-- Login Desktop -->
             <div
@@ -162,11 +221,7 @@ const closeMobileMenu = () => {
                 <LogIn class="h-[20px] w-[20px] cursor-pointer" />
             </div>
 
-            <div
-                v-else-if="userProfile"
-                class="cursor-pointer"
-                @click="BaseHelper.redirectTo('/about')"
-            >
+            <div v-else-if="userProfile" class="cursor-pointer">
                 <img
                     v-if="userProfile.photo"
                     :src="userProfile.photo"
@@ -241,6 +296,14 @@ const closeMobileMenu = () => {
                         >
                             {{ t(`navigation.${item.name}`) }}
                         </div>
+
+                        <button
+                            v-if="isAuthenticated && $route.name !== 'dashboard'"
+                            class="px-3 py-2 rounded-lg transition-colors text-start hover:bg-muted cursor-pointer text-[#C04000]"
+                            @click="BaseHelper.redirectTo('/dashboard')"
+                        >
+                            Дашборд
+                        </button>
 
                         <Separator class="my-2" />
 

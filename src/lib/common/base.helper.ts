@@ -14,6 +14,26 @@ class BaseHelper {
     static isApiError<T extends object>(result: T | ApiError): result is ApiError {
         return !(result as ApiError).status && 'error' in result;
     }
+
+    static pluralize(count: number): string {
+        const lastDigit = count % 10;
+        const lastTwoDigits = count % 100;
+        const countStr = count.toString();
+
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+            return countStr + ' мест';
+        }
+
+        if (lastDigit === 1) {
+            return countStr + ' место';
+        }
+
+        if (lastDigit >= 2 && lastDigit <= 4) {
+            return countStr + ' места';
+        }
+
+        return countStr + ' мест';
+    }
 }
 
 export default BaseHelper;

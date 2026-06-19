@@ -51,7 +51,7 @@ onMounted(async () => {
 
     <Transition appear name="fade">
         <div v-if="showContent">
-            <Header />
+            <Header class="mt-2!" />
             <RouterView />
             <Toaster close-button position="bottom-right" />
             <Footer />

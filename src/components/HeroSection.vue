@@ -6,50 +6,55 @@ import {Card, CardContent, CardHeader} from '@/components/ui/card';
 import {ref} from 'vue';
 import {Circle, Users, Clock3} from 'lucide-vue-next';
 import {tables} from '@/lib/constants.ts';
-
 </script>
 
 <template>
-    <section class="min-h-[93vh] flex items-center justify-center">
+    <section class="min-h-[93vh] flex items-center justify-center px-4 md:py-0">
         <div class="container mx-auto">
-            <div class="grid lg:grid-cols-2 gap-10">
-                <div class="flex flex-col gap-5">
-                    <Badge> CRM для кальянных </Badge>
-
-                    <h1 class="text-6xl font-bold mt-5">
+            <div class="grid lg:grid-cols-2 gap-8 lg:gap-10">
+                <!-- Left -->
+                <div
+                    class="flex flex-col gap-4 text-center lg:text-left items-center lg:items-start"
+                >
+                    <Badge>CRM для кальянных</Badge>
+                    <h1
+                        class="text-4xl sm:text-5xl lg:text-6xl font-bold mt-2 lg:mt-5 leading-tight"
+                    >
                         Управляйте бронями и гостями из одной системы
                     </h1>
-
-                    <p class="text-muted-foreground mt-6">
+                    <p class="text-muted-foreground mt-2 lg:mt-6 max-w-md">
                         Онлайн бронирование столов, база клиентов, аналитика загрузки и Telegram
                         уведомления.
                     </p>
-
-                    <div class="flex gap-4 mt-8">
-                        <Button size="lg"> Попробовать бесплатно </Button>
-
-                        <Button size="lg" variant="outline"> Демо </Button>
+                    <div class="flex gap-3 mt-4 lg:mt-8 w-full sm:w-auto">
+                        <Button size="lg" class="flex-1 sm:flex-none">
+                            Попробовать бесплатно
+                        </Button>
+                        <Button size="lg" variant="outline" class="flex-1 sm:flex-none">
+                            Демо
+                        </Button>
                     </div>
                 </div>
 
+                <!-- Right -->
                 <Card>
-                    <CardHeader> Загрузка зала </CardHeader>
-
+                    <CardHeader>Загрузка зала</CardHeader>
                     <CardContent>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div
+                            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-3"
+                        >
                             <div
                                 v-for="table in tables"
                                 :key="table.id"
-                                class="rounded-2xl border bg-card p-4 transition-all hover:shadow-md hover:-translate-y-1"
+                                class="rounded-2xl border bg-card p-3 sm:p-4 transition-all hover:shadow-md hover:-translate-y-1"
                             >
                                 <div class="flex items-center justify-between">
-                                    <span class="font-medium">
+                                    <span class="font-medium text-sm sm:text-base">
                                         {{ table.name }}
                                     </span>
-
                                     <Circle
                                         :class="[
-                                            'size-3 fill-current',
+                                            'size-3 fill-current shrink-0',
                                             table.status === 'busy'
                                                 ? 'text-red-500'
                                                 : table.status === 'reserved'
@@ -58,15 +63,13 @@ import {tables} from '@/lib/constants.ts';
                                         ]"
                                     />
                                 </div>
-
-                                <div class="mt-4 flex items-center gap-2 text-muted-foreground">
-                                    <Users class="size-4" />
-                                    <span>{{ table.seats }} мест</span>
+                                <div class="mt-3 flex items-center gap-2 text-muted-foreground">
+                                    <Users class="size-4 shrink-0" />
+                                    <span class="text-sm">{{ table.seats }} мест</span>
                                 </div>
-
-                                <div class="mt-2 flex items-center gap-2 text-muted-foreground">
-                                    <Clock3 class="size-4" />
-                                    <span>
+                                <div class="mt-1.5 flex items-center gap-2 text-muted-foreground">
+                                    <Clock3 class="size-4 shrink-0" />
+                                    <span class="text-sm">
                                         {{
                                             table.status === 'busy'
                                                 ? 'Занят'
@@ -80,8 +83,6 @@ import {tables} from '@/lib/constants.ts';
                         </div>
                     </CardContent>
                 </Card>
-
-                <!-- <DashboardMockup /> -->
             </div>
         </div>
     </section>

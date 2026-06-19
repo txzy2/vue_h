@@ -15,6 +15,21 @@ export type ApiResponse<T> = {
 class HttpService {
     private client: AxiosInstance;
 
+    private isRefreshing = false;
+    private failedQueue: any[] = [];
+
+    private processQueue = (error: any, token: string | null = null) => {
+        this.failedQueue.forEach(prom => {
+            if (error) {
+                prom.reject(error);
+            } else {
+                prom.resolve(token);
+            }
+        });
+
+        this.failedQueue = [];
+    };
+
     public constructor(baseURL: string) {
         this.client = axios.create({baseURL});
         this.setupInterceptors();
@@ -39,22 +54,52 @@ class HttpService {
         this.client.interceptors.response.use(
             response => response,
             async error => {
-                const original = error.config;
+                const originalRequest = error.config;
 
-                if (error.response?.status === 401 && !original._retry) {
-                    original._retry = true;
+                if (error.response?.status === 401 && !originalRequest._retry) {
+                    if (this.isRefreshing) {
+                        return new Promise((resolve, reject) => {
+                            this.failedQueue.push({resolve, reject});
+                        }).then(token => {
+                            originalRequest.headers.Authorization = `Bearer ${token}`;
+                            return this.client(originalRequest);
+                        });
+                    }
+
+                    originalRequest._retry = true;
+                    this.isRefreshing = true;
+
                     try {
-                        const res = await this.client.post<{
-                            access_token: string;
-                            refresh_token: string;
-                        }>(import.meta.env.VITE_API_URL + '/auth/refresh');
+                        const refreshToken = CookieService.get('refresh_token');
 
-                        CookieService.set('access_token', res.data.access_token);
-                        return this.client(original);
-                    } catch {
-                        // CookieService.remove('access_token');
-                        // window.location.href = '/login';
-                        console.log('blabla');
+                        const {data} = await axios.post('/api/v1/auth/refresh', {
+                            refresh_token: refreshToken
+                        });
+
+                        const accessToken = data.data.access_token;
+                        const newRefreshToken = data.data.refresh_token;
+
+                        CookieService.set('access_token', accessToken);
+                        CookieService.set('refresh_token', newRefreshToken);
+
+                        this.client.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+
+                        this.processQueue(null, accessToken);
+
+                        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+
+                        return this.client(originalRequest);
+                    } catch (err) {
+                        this.processQueue(err, null);
+
+                        CookieService.remove('access_token');
+                        CookieService.remove('refresh_token');
+
+                        window.location.href = '/login';
+
+                        return Promise.reject(err);
+                    } finally {
+                        this.isRefreshing = false;
                     }
                 }
 

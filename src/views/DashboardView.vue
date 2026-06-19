@@ -1,10 +1,21 @@
 <script setup lang="ts">
 import {activities, bookings, sidebarItems, stats, tables, topHookahs} from '@/lib/constants.ts';
-import {Armchair, Users} from 'lucide-vue-next';
+import {Armchair, Clock3, Users} from 'lucide-vue-next';
 import {Card, CardContent, CardHeader} from '@/components/ui/card';
-import {useRoute} from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
+import {useUserStore} from '@/stores/user.store';
+import {onMounted} from 'vue';
+import BaseHelper from '@/lib/common/base.helper';
 
 const route = useRoute();
+const router = useRouter();
+
+const {isAuthenticated} = useUserStore();
+onMounted(() => {
+    if (!isAuthenticated) {
+        router.push('/login');
+    }
+});
 </script>
 
 <template>
@@ -38,7 +49,9 @@ const route = useRoute();
                         <CardContent class="p-6">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-muted-foreground text-sm">{{ item.title }}</p>
+                                    <p class="text-muted-foreground text-[12px]">
+                                        {{ item.title }}
+                                    </p>
                                     <p class="text-3xl font-bold mt-2">{{ item.value }}</p>
                                 </div>
                                 <component :is="item.icon" class="size-8 text-muted-foreground" />
@@ -48,40 +61,56 @@ const route = useRoute();
                 </div>
                 <div class="grid gap-4 lg:grid-cols-3">
                     <Card class="lg:col-span-2">
-                        <CardHeader> <CardTitle> Загрузка зала </CardTitle> </CardHeader>
+                        <CardHeader>
+                            <CardTitle>
+                                Загрузка зала ({{ BaseHelper.pluralize(tables.length) }})
+                            </CardTitle>
+                        </CardHeader>
                         <CardContent>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <div
                                     v-for="table in tables"
                                     :key="table.id"
-                                    class="relative rounded-2xl border bg-card p-4 hover:shadow-lg transition-all"
+                                    class="rounded-2xl border bg-card p-4 hover:shadow-lg transition-all"
                                 >
-                                    <div
-                                        class="absolute top-3 right-3 size-3 rounded-full"
-                                        :class="{
-                                            'bg-green-500': table.status === 'free',
-                                            'bg-yellow-500': table.status === 'reserved',
-                                            'bg-red-500': table.status === 'busy'
-                                        }"
-                                    />
-                                    <Armchair class="size-8 mx-auto mb-3 text-muted-foreground" />
-                                    <div class="text-center font-medium">{{ table.name }}</div>
-                                    <div
-                                        class="flex items-center justify-center gap-1 mt-2 text-sm text-muted-foreground"
-                                    >
-                                        <Users class="size-4" /> {{ table.seats }}
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="size-3 rounded-full"
+                                            :class="{
+                                                'bg-green-500': table.status === 'free',
+                                                'bg-yellow-500': table.status === 'reserved',
+                                                'bg-red-500': table.status === 'busy'
+                                            }"
+                                        />
+                                        <!-- <Armchair class="text-muted-foreground" /> -->
+                                        <div class="text-center font-medium">{{ table.name }}</div>
                                     </div>
-                                    <div
-                                        class="flex items-center justify-center gap-1 mt-2 text-xs text-muted-foreground"
-                                    >
-                                        <Clock3 class="size-3" />
-                                        {{
-                                            table.status === 'busy'
-                                                ? 'Занят'
-                                                : table.status === 'reserved'
-                                                  ? 'Бронь'
-                                                  : 'Свободен'
-                                        }}
+
+                                    <div class="flex flex-col mt-4">
+                                        <div class="flex items-center gap-1 text-[12px]">
+                                            <Users class="size-4" />
+                                            <span>({{ table.seats }} чел.)</span>
+                                        </div>
+
+                                        <div
+                                            :class="{
+                                                'text-green-500': table.status === 'free',
+                                                'text-yellow-500': table.status === 'reserved',
+                                                'text-red-500': table.status === 'busy'
+                                            }"
+                                            class="flex items-center gap-1 text-xs"
+                                        >
+                                            <Clock3 class="size-3" />
+                                            <span>
+                                                {{
+                                                    table.status === 'busy'
+                                                        ? 'Занят'
+                                                        : table.status === 'reserved'
+                                                          ? 'Бронь'
+                                                          : 'Свободен'
+                                                }}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -99,7 +128,7 @@ const route = useRoute();
                                     <div class="flex items-center gap-2">
                                         <CalendarClock class="size-4" /> {{ booking.name }}
                                     </div>
-                                    <span class="text-muted-foreground text-sm">
+                                    <span class="text-muted-foreground text-[12px]">
                                         {{ booking.time }}
                                     </span>
                                 </div>
