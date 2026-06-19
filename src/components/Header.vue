@@ -114,7 +114,7 @@ const closeMobileMenu = () => {
                 v-else-if="userProfile"
                 :title="userProfile.email"
                 class="flex cursor-pointer items-center gap-2.5"
-                @click="BaseHelper.redirectTo('/about')"
+                @click="BaseHelper.redirectTo('/dashboard')"
             >
                 <img
                     v-if="userProfile.photo"

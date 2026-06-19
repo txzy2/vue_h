@@ -1,6 +1,10 @@
 import CookieService from '@/lib/services/cookie.service';
 import {createRouter, createWebHistory} from 'vue-router';
 import HomeView from '../views/HomeView.vue';
+import DashboardView from '@/views/DashboardView.vue';
+
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,19 +24,28 @@ const router = createRouter({
             path: '/login',
             name: 'login',
             component: () => import('@/views/Login.vue')
+        },
+        {
+            path: '/dashboard',
+            name: 'dashboard',
+            component: DashboardView
         }
     ]
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach((to, from, next) => {
     const accessToken = CookieService.get('access_token');
 
     if (to.path === '/login' && accessToken) {
-        window.location.href = '/';
-        return false;
+        return next('/');
     }
 
-    return true;
+    NProgress.start();
+    next();
+});
+
+router.afterEach(() => {
+    NProgress.done();
 });
 
 export default router;

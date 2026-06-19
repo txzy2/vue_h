@@ -5,33 +5,8 @@ import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader} from '@/components/ui/card';
 import {ref} from 'vue';
 import {Circle, Users, Clock3} from 'lucide-vue-next';
+import {tables} from '@/lib/constants.ts';
 
-const tables = [
-    {
-        id: 1,
-        name: 'Стол №1',
-        seats: 4,
-        status: 'busy'
-    },
-    {
-        id: 2,
-        name: 'Стол №2',
-        seats: 6,
-        status: 'free'
-    },
-    {
-        id: 3,
-        name: 'VIP №1',
-        seats: 8,
-        status: 'reserved'
-    },
-    {
-        id: 4,
-        name: 'Стол №4',
-        seats: 4,
-        status: 'free'
-    }
-];
 </script>
 
 <template>
