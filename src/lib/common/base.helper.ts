@@ -34,6 +34,15 @@ class BaseHelper {
 
         return countStr + ' мест';
     }
+
+    static getTimeGreeting = () => {
+        const hour = new Date().getHours();
+
+        if (hour >= 0 && hour < 6) return {text: 'Доброй ночи', emoji: '🌙'};
+        if (hour >= 6 && hour < 12) return {text: 'Доброе утро', emoji: '🌅'};
+        if (hour >= 12 && hour < 17) return {text: 'Добрый день', emoji: '☀️'};
+        return {text: 'Добрый вечер', emoji: '🌆'};
+    };
 }
 
 export default BaseHelper;

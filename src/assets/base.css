@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 @import 'tailwindcss';
 @import 'tw-animate-css';
@@ -84,8 +84,6 @@
 body {
     min-height: 100vh;
     font-family:
-        'Geist Mono',
-        'JetBrains Mono',
         Inter,
         -apple-system,
         BlinkMacSystemFont,
@@ -98,6 +96,7 @@ body {
         'Droid Sans',
         'Helvetica Neue',
         sans-serif;
+    font-feature-settings: 'tnum';
 }
 
 @theme inline {
@@ -154,4 +153,21 @@ body {
     body {
         @apply bg-background text-foreground;
     }
+}
+
+body {
+    background-image:
+        radial-gradient(ellipse 60% 40% at 50% 0%, oklch(0.8 0.06 80 / 25%), transparent 70%),
+        radial-gradient(var(--grid-dot) 1px, transparent 1px);
+    background-size:
+        auto,
+        28px 28px;
+}
+
+:root {
+    --grid-dot: oklch(0.7 0.01 85 / 50%);
+}
+
+.dark {
+    --grid-dot: oklch(1 0 0 / 8%);
 }

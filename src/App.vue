@@ -10,6 +10,7 @@ import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
 import {storeToRefs} from 'pinia';
 import CookieService from '@/lib/services/cookie.service';
+import BottomButton from './components/BottomButton.vue';
 
 const userStore = useUserStore();
 const {isLoading, profile} = storeToRefs(userStore);
@@ -44,7 +45,7 @@ onMounted(async () => {
 <template>
     <div
         v-if="isLoading"
-        class="fixed inset-0 flex items-center justify-center bg-background z-50 transition-opacity duration-300"
+        class="fixed inset-0 flex items-center justify-center bg-background transition-opacity duration-300 cursor-pointer"
     >
         <Spinner size="lg" />
     </div>
@@ -52,8 +53,12 @@ onMounted(async () => {
     <Transition appear name="fade">
         <div v-if="showContent">
             <Header class="mt-2!" />
+
             <RouterView />
+
+            <BottomButton />
             <Toaster close-button position="bottom-right" />
+
             <Footer />
         </div>
     </Transition>

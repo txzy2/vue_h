@@ -4,7 +4,7 @@ import {Armchair, Clock3, Users} from 'lucide-vue-next';
 import {Card, CardContent, CardHeader} from '@/components/ui/card';
 import {useRoute, useRouter} from 'vue-router';
 import {useUserStore} from '@/stores/user.store';
-import {onMounted} from 'vue';
+import {computed, onMounted} from 'vue';
 import BaseHelper from '@/lib/common/base.helper';
 
 const route = useRoute();
@@ -16,6 +16,8 @@ onMounted(() => {
         router.push('/login');
     }
 });
+
+const greeting = computed(() => BaseHelper.getTimeGreeting());
 </script>
 
 <template>
@@ -25,7 +27,7 @@ onMounted(() => {
                 <button
                     v-for="item in sidebarItems"
                     :key="item.title"
-                    class="flex w-full items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer"
+                    class="flex w-full items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer text-[14px]"
                     :class="
                         route.path === item.path
                             ? 'bg-primary text-primary-foreground shadow-md'
@@ -41,7 +43,7 @@ onMounted(() => {
         <main class="flex-1 min-w-0 w-full">
             <div class="w-full p-6 flex flex-col gap-6">
                 <div>
-                    <h2 class="text-3xl font-bold">Добрый вечер 👋</h2>
+                    <h2 class="text-3xl font-bold">{{ greeting.text }} {{ greeting.emoji }}</h2>
                     <p class="text-muted-foreground">Управление заведением в реальном времени</p>
                 </div>
                 <div class="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">

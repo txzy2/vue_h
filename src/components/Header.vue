@@ -6,7 +6,17 @@ import {useUserStore} from '@/stores/user.store.ts';
 import {storeToRefs} from 'pinia';
 import {useDark} from '@vueuse/core';
 import {Spinner} from '@/components/ui/spinner';
-import {LogIn, User, Spotlight, Menu, X, Settings, LogOut} from 'lucide-vue-next';
+import {
+    LogIn,
+    User,
+    Spotlight,
+    Menu,
+    X,
+    Settings,
+    LogOut,
+    Mail,
+    ChevronRight
+} from 'lucide-vue-next';
 import ThemeSwitcher from '@/components/ui/theme/ThemeSwitcher.vue';
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from '@/components/ui/sheet';
 import {Button} from '@/components/ui/button';
@@ -28,8 +38,7 @@ const textColor = computed(() => (isDark.value ? '#ffffff' : '#000000'));
 const isMobileMenuOpen = ref(false);
 
 const userStore = useUserStore();
-const {isAuthenticated} = userStore;
-const {profile: userProfile} = storeToRefs(userStore);
+const {profile: userProfile, isAuthenticated} = storeToRefs(userStore);
 
 const isAdmin = computed(() => {
     return userProfile.value !== null && userProfile.value.role === 'Admin';
@@ -39,6 +48,8 @@ const isSuperUser = computed(() => {
 });
 
 const {currentTime} = useClock();
+
+const unreadCount = 3;
 
 const navListItems = [
     {name: 'home', link: '/'},
@@ -100,29 +111,20 @@ const handleLogout = async () => {
             </span>
         </div>
 
-        <div class="absolute right-1/2 left-1/2 hidden md:block" v-if="isAuthenticated">
+        <div class="absolute left-1/2 right-1/2" v-if="isAuthenticated">
             {{ currentTime }}
         </div>
 
         <!-- Desktop Navigation -->
-        <div class="hidden md:flex items-center justify-center gap-5">
+        <div class="hidden md:flex items-center justify-center gap-3">
             <!-- Nav -->
             <nav class="flex items-center gap-2">
-                <!-- Ссылка на дашборд если авторизован и не на дашборде -->
-                <button
-                    v-if="isAuthenticated && $route.name !== 'dashboard'"
-                    class="transition duration-300 hover:scale-105 text-[#C04000] cursor-crosshair"
-                    @click="BaseHelper.redirectTo('/dashboard')"
-                >
-                    Дашборд
-                </button>
-
                 <!-- Обычная навигация — скрыта для SuperUser -->
                 <template v-if="!isSuperUser && !isAdmin">
                     <button
                         v-for="item in navListItems"
                         :key="item.name"
-                        class="transition duration-300 hover:scale-105 cursor-crosshair"
+                        class="transition duration-300 hover:scale-105 cursor-crosshair text-[14px]"
                         @click="BaseHelper.redirectTo(item.link)"
                     >
                         {{ t(`navigation.${item.name}`) }}
@@ -135,6 +137,16 @@ const handleLogout = async () => {
             </nav>
 
             <ThemeSwitcher />
+
+            <Button class="mx-0 cursor-pointer relative" variant="ghost" v-if="isAuthenticated">
+                <Mail @click="BaseHelper.redirectTo('/contact')" />
+                <span
+                    v-if="unreadCount > 0"
+                    class="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-green-500 rounded-full"
+                >
+                    {{ unreadCount > 99 ? '99+' : unreadCount }}
+                </span>
+            </Button>
 
             <!-- Loading -->
             <div v-if="userStore.isLoading">
@@ -160,20 +172,15 @@ const handleLogout = async () => {
                             :style="{color: textColor}"
                             class="h-[25px] w-[25px] rounded-full border border-border"
                         />
-                        <div class="flex-col text-[14px] font-semibold hidden lg:flex">
-                            <div class="m-0">
-                                <span>{{ userProfile.name }}</span>
-                                <span class="text-[10px] mr-1 text-[#C04000]">
-                                    ({{ isSuperUser || isAdmin ? userProfile.role : '' }})
-                                </span>
-                            </div>
-                            <span class="text-[10px]">{{ userProfile.email }}</span>
+                        <div class="text-[14px] font-semibold hidden lg:flex items-center gap-1">
+                            <span>{{ userProfile.name }}</span>
                         </div>
                     </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" class="w-48 flex flex-col gap-2">
+                <DropdownMenuContent align="end" class="w-48 flex flex-col gap-1">
                     <DropdownMenuLabel class="text-xs text-muted-foreground font-normal">
                         {{ userProfile.email }}
+                        <span class="text-[#C04000]"> ({{ userProfile.role }}) </span>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
@@ -204,7 +211,7 @@ const handleLogout = async () => {
             <!-- Login Desktop -->
             <div
                 v-else
-                class="hidden md:flex cursor-pointer items-center gap-[5px] transition duration-300 ease-in-out hover:scale-105"
+                class="hidden md:flex cursor-pointer items-center gap-[5px] transition duration-300 ease-in-out hover:scale-105 text-[12px]"
                 @click="BaseHelper.redirectTo('/login')"
             >
                 <LogIn class="h-[18px] w-[18px]" />
@@ -266,6 +273,7 @@ const handleLogout = async () => {
                                 :style="{color: textColor}"
                                 class="h-[40px] w-[40px] rounded-full border border-border"
                             />
+
                             <div class="flex flex-col">
                                 <span class="font-semibold">{{ userProfile.name }}</span>
                                 <span class="text-xs text-muted-foreground">{{
@@ -296,14 +304,6 @@ const handleLogout = async () => {
                         >
                             {{ t(`navigation.${item.name}`) }}
                         </div>
-
-                        <button
-                            v-if="isAuthenticated && $route.name !== 'dashboard'"
-                            class="px-3 py-2 rounded-lg transition-colors text-start hover:bg-muted cursor-pointer text-[#C04000]"
-                            @click="BaseHelper.redirectTo('/dashboard')"
-                        >
-                            Дашборд
-                        </button>
 
                         <Separator class="my-2" />
 

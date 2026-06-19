@@ -97,7 +97,7 @@ class UserService {
     // }
 
     public async logout(): Promise<void> {
-        await this.httpService.post('/api/logout');
+        await this.httpService.delete('/auth/logout');
         CookieService.remove('token');
     }
 }

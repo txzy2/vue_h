@@ -6,10 +6,15 @@ import {Card, CardContent, CardHeader} from '@/components/ui/card';
 import {ref} from 'vue';
 import {Circle, Users, Clock3} from 'lucide-vue-next';
 import {tables} from '@/lib/constants.ts';
+import {useUserStore} from '@/stores/user.store';
+import {useRouter} from 'vue-router';
+
+const {isAuthenticated} = useUserStore();
+const router = useRouter();
 </script>
 
 <template>
-    <section class="min-h-[93vh] flex items-center justify-center px-4 md:py-0">
+    <section class="min-h-[90vh] flex items-center justify-center px-4 md:py-0">
         <div class="container mx-auto">
             <div class="grid lg:grid-cols-2 gap-8 lg:gap-10">
                 <!-- Left -->
@@ -26,13 +31,24 @@ import {tables} from '@/lib/constants.ts';
                         Онлайн бронирование столов, база клиентов, аналитика загрузки и Telegram
                         уведомления.
                     </p>
-                    <div class="flex gap-3 mt-4 lg:mt-8 w-full sm:w-auto">
-                        <Button size="lg" class="flex-1 sm:flex-none">
-                            Попробовать бесплатно
+                    <div>
+                        <Button
+                            size="lg"
+                            class="flex-1 sm:flex-none text-[14px] px-4 py-2 font-medium cursor-pointer hover:scale-105"
+                            v-if="isAuthenticated"
+                            @click="router.push('/dashboard')"
+                        >
+                            Перейти в дашборд
                         </Button>
-                        <Button size="lg" variant="outline" class="flex-1 sm:flex-none">
-                            Демо
-                        </Button>
+
+                        <div class="flex gap-3 mt-4 lg:mt-8 w-full sm:w-auto" v-else>
+                            <Button size="lg" class="flex-1 sm:flex-none">
+                                Попробовать бесплатно
+                            </Button>
+                            <Button size="lg" variant="outline" class="flex-1 sm:flex-none">
+                                Демо
+                            </Button>
+                        </div>
                     </div>
                 </div>
 

@@ -150,6 +150,15 @@ class HttpService {
         }
     }
 
+    public async delete<T extends object>(url: string): Promise<T | ApiError> {
+        try {
+            const response: AxiosResponse<T> = await this.client.delete(API_CONFIG.baseURL + url);
+            return response.data;
+        } catch (error: unknown) {
+            return this.handleError(error);
+        }
+    }
+
     private handleError(error: unknown): ApiError {
         if (error instanceof AxiosError) {
             return {status: false, error: error.response?.data.error};
